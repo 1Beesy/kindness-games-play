@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>The Kindness That Grew — Games World</title>
+<meta name="description" content="Free games from Luella Bees' book, The Kindness That Grew. Play with Lou &amp; Sue the kangaroos!">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; min-height: 100%; }
+  body {
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Baloo', system-ui, sans-serif;
+    background: linear-gradient(180deg, #7ec8ff 0%, #b6e3ff 30%, #d8f5c8 60%, #f4e2a1 100%);
+    color: #34495e; text-align: center; user-select: none; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; overflow-x: hidden;
+  }
+  .cloud { position: fixed; font-size: 3rem; opacity: .8; pointer-events: none; animation: drift 45s linear infinite; z-index: 0; }
+  @keyframes drift { from { transform: translateX(-15vw); } to { transform: translateX(115vw); } }
+  .wrap { position: relative; z-index: 2; width: 100%; max-width: 620px; padding: 20px 16px 40px; }
+
+  .roos { font-size: 4rem; line-height: 1; margin-top: 8px; }
+  h1 { font-size: clamp(1.7rem, 6.5vw, 2.5rem); margin: 6px 0 2px; color: #e67e22;
+       text-shadow: 2px 2px 0 #fff, 4px 4px 0 rgba(0,0,0,.1); }
+  .book { font-size: 1.05rem; color: #5b7a3a; font-weight: bold; margin: 0 0 4px; }
+  .welcome { font-size: 1.05rem; color: #34495e; margin: 8px auto 16px; max-width: 460px; }
+
+  .namecard {
+    background: rgba(255,255,255,.92); border-radius: 22px; padding: 14px 16px; margin: 0 0 18px;
+    box-shadow: 0 6px 0 rgba(0,0,0,.1); display: flex; gap: 8px; align-items: center; justify-content: center;
+    flex-wrap: wrap;
+  }
+  .namecard label { font-weight: bold; }
+  .namecard input {
+    font-family: inherit; font-size: 1.1rem; padding: 8px 12px; border: 3px solid #ffd166;
+    border-radius: 12px; width: 160px; text-align: center; color: #34495e;
+  }
+  .namecard input:focus { outline: none; border-color: #e67e22; }
+
+  .stars-banner {
+    background: #fff6e0; border-radius: 18px; padding: 10px; margin: 0 0 18px; font-weight: bold;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,.05); font-size: 1.05rem;
+  }
+  .stars-banner .n { color: #e67e22; font-size: 1.5rem; }
+
+  .games { display: grid; gap: 14px; }
+  .game-card {
+    display: block; text-decoration: none; color: inherit;
+    background: rgba(255,255,255,.94); border-radius: 24px; padding: 18px 16px;
+    box-shadow: 0 8px 0 rgba(0,0,0,.1); transition: transform .08s; text-align: left;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .game-card:active { transform: translateY(4px); box-shadow: 0 4px 0 rgba(0,0,0,.1); }
+  .game-card .icon { font-size: 3rem; flex-shrink: 0; }
+  .game-card .title { font-size: 1.3rem; font-weight: bold; color: #e8590c; }
+  .game-card .desc { font-size: .92rem; color: #7f8c8d; margin: 2px 0 4px; }
+  .game-card .best { font-size: .9rem; font-weight: bold; color: #2b8a3e; }
+  .game-card .play { margin-left: auto; font-size: 1.6rem; align-self: center; }
+  .card-1 { border-left: 8px solid #b197fc; }
+  .card-2 { border-left: 8px solid #4dabf7; }
+  .card-3 { border-left: 8px solid #ff922b; }
+
+  .footer { font-size: .85rem; color: #6b8e4e; margin-top: 22px; line-height: 1.5; }
+  .footer .charity { color: #e64980; }
+</style>
+</head>
+<body>
+<div class="cloud" style="top:6%; animation-delay:0s">☁️</div>
+<div class="cloud" style="top:16%; animation-delay:-20s">🦋</div>
+<div class="cloud" style="top:10%; animation-delay:-34s">☁️</div>
+
+<div class="wrap">
+  <div class="roos">🦘🦘</div>
+  <h1>Welcome to<br>The Kindness That Grew<br>Games World!</h1>
+  <p class="book">Play with Lou &amp; Sue the kangaroos 🌿</p>
+  <p class="welcome">Pick a game below. Every time you play, try to beat your own best score — you can do it! 💛</p>
+
+  <div class="namecard">
+    <label for="name">👋 Your name:</label>
+    <input id="name" type="text" placeholder="type your name" maxlength="16" autocomplete="off">
+  </div>
+
+  <div class="stars-banner">
+    ⭐️ Your stars so far: <span class="n" id="stars">0</span>
+  </div>
+
+  <div class="games">
+    <a class="game-card card-1" href="spelling.html">
+      <span class="icon">🔤</span>
+      <span>
+        <span class="title">Spelling Safari</span>
+        <span class="desc">Listen to the word, then hop the letters into place.</span>
+        <span class="best" id="best-spelling">Your best: 0</span>
+      </span>
+      <span class="play">▶︎</span>
+    </a>
+
+    <a class="game-card card-2" href="times.html">
+      <span class="icon">✖️</span>
+      <span>
+        <span class="title">Times Table Hop</span>
+        <span class="desc">Answer the times tables and hop up the hill.</span>
+        <span class="best" id="best-times">Your best: 0</span>
+      </span>
+      <span class="play">▶︎</span>
+    </a>
+
+    <a class="game-card card-3" href="medicine.html">
+      <span class="icon">🍎</span>
+      <span>
+        <span class="title">Lou's Medicine Run</span>
+        <span class="desc">Catch the fruit and herbs, dodge the snakes and bees!</span>
+        <span class="best" id="best-medicine">Your best: 0</span>
+      </span>
+      <span class="play">▶︎</span>
+    </a>
+  </div>
+
+  <div class="footer">
+    Made with love by <strong>Luella Bees</strong> 💛<br>
+    from her book <em>The Kindness That Grew</em><br>
+    <span class="charity">A free gift — kindness grows when you share it 🌱</span>
+  </div>
+</div>
+
+<script src="kg-scores.js"></script>
+<script>
+  var nameInput = document.getElementById('name');
+  nameInput.value = KG.getName();
+  nameInput.addEventListener('input', function () { KG.setName(nameInput.value); });
+
+  function refresh() {
+    document.getElementById('best-spelling').textContent = 'Your best: ' + KG.getBest('spelling');
+    document.getElementById('best-times').textContent = 'Your best: ' + KG.getBest('times');
+    document.getElementById('best-medicine').textContent = 'Your best: ' + KG.getBest('medicine');
+    document.getElementById('stars').textContent = KG.totalStars();
+  }
+  refresh();
+  // refresh when returning from a game (back button / tab focus)
+  window.addEventListener('pageshow', refresh);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) refresh(); });
+</script>
+</body>
+</html>

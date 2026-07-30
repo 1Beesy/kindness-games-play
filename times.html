@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Lou &amp; Sue's Times Table Hop</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Baloo', system-ui, sans-serif;
+    background: linear-gradient(180deg, #ffd8a8 0%, #ffec99 35%, #d3f9d8 70%, #b2f2bb 100%);
+    color: #34495e; text-align: center; user-select: none;
+    display: flex; flex-direction: column; align-items: center; min-height: 100%; overflow-x: hidden;
+  }
+  .wrap { position: relative; z-index: 2; width: 100%; max-width: 640px; padding: 16px; }
+  h1 { font-size: clamp(1.6rem, 6vw, 2.4rem); margin: 8px 0 2px; color: #e8590c;
+       text-shadow: 2px 2px 0 #fff, 4px 4px 0 rgba(0,0,0,.1); }
+  .subtitle { margin: 0 0 10px; font-size: 1rem; color: #2b8a3e; font-weight: bold; }
+
+  .hud { display: flex; justify-content: space-around; gap: 8px; margin-bottom: 10px; }
+  .hud .chip { background: #fff; border-radius: 18px; padding: 8px 14px; flex: 1;
+    box-shadow: 0 4px 0 rgba(0,0,0,.12); font-weight: bold; font-size: .95rem; }
+  .chip .big { display: block; font-size: 1.5rem; color: #e8590c; }
+
+  /* hill / progress with kangaroo hopping up steps */
+  .hill { position: relative; height: 90px; margin: 4px 0 14px; }
+  .steps { display: flex; align-items: flex-end; justify-content: space-between; height: 100%;
+           padding: 0 6px; }
+  .step { flex: 1; margin: 0 2px; background: #8ce99a; border-radius: 8px 8px 0 0;
+          box-shadow: inset 0 -4px 0 rgba(0,0,0,.06); }
+  .rooOnHill { position: absolute; bottom: 0; font-size: 2.2rem; transition: left .5s ease, bottom .5s ease; }
+
+  .card { background: rgba(255,255,255,.94); border-radius: 26px; padding: 24px 18px;
+    box-shadow: 0 10px 0 rgba(0,0,0,.1); margin-bottom: 14px; }
+
+  .question { font-size: clamp(2.4rem, 12vw, 3.6rem); font-weight: bold; color: #364fc7; margin: 6px 0 4px; }
+  .roo { font-size: 3rem; display:inline-block; }
+  .roo.hop { animation: hop .6s ease; }
+  @keyframes hop { 0%,100%{transform:translateY(0)} 30%{transform:translateY(-26px) rotate(-8deg)} 60%{transform:translateY(-8px)} }
+
+  .answer-box { font-size: 2.4rem; font-weight: bold; min-height: 3rem; letter-spacing: 4px;
+    color: #34495e; margin: 6px 0 4px; }
+  .answer-box .cursor { color: #e8590c; }
+
+  .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+  .num {
+    padding: 16px 0; border: none; border-radius: 14px; background: #ffd166; font-size: 1.6rem;
+    font-weight: bold; color: #7a4e00; cursor: pointer; box-shadow: 0 4px 0 #e0a93c; font-family: inherit;
+    transition: transform .05s;
+  }
+  .num:active { transform: translateY(3px); box-shadow: 0 1px 0 #e0a93c; }
+  .num.del { background: #ff8787; color: #fff; box-shadow: 0 4px 0 #e64980; }
+  .num.go  { background: #69db7c; color: #14532d; box-shadow: 0 4px 0 #37b24d; }
+
+  .feedback { font-size: 1.3rem; font-weight: bold; min-height: 1.5em; margin-top: 10px; }
+
+  .start-screen, .level-up { position: fixed; inset: 0; z-index: 10; display: flex;
+    flex-direction: column; align-items: center; justify-content: center; padding: 24px;
+    background: linear-gradient(180deg, #ffd8a8, #b2f2bb); }
+  .level-up { display:none; background: rgba(0,0,0,.55); }
+  .panel { background:#fff; border-radius:28px; padding:28px 22px; max-width:460px; box-shadow:0 12px 0 rgba(0,0,0,.15); }
+  .big-btn { margin-top:18px; padding:16px 34px; font-size:1.3rem; border:none; border-radius:20px;
+    background:#ffd166; color:#7a4e00; font-weight:bold; cursor:pointer; font-family:inherit; box-shadow:0 6px 0 #e0a93c; }
+  .big-btn:active { transform: translateY(4px); box-shadow:0 2px 0 #e0a93c; }
+  .levels-list { font-size:.95rem; color:#7f8c8d; margin-top:10px; }
+  .footer { font-size:.8rem; color:#2b8a3e; margin: 4px 0 20px; }
+  .confetti { position: fixed; font-size:1.6rem; z-index:20; pointer-events:none; animation: fall 2.5s linear forwards; }
+  @keyframes fall { to { transform: translateY(105vh) rotate(360deg); opacity:0; } }
+  .stars { font-size: 1.4rem; letter-spacing:4px; margin:6px 0; }
+</style>
+</head>
+<body>
+<a href="index.html" style="position:fixed;top:8px;left:8px;z-index:30;background:#fff;border-radius:14px;padding:6px 12px;text-decoration:none;font-size:1.1rem;box-shadow:0 3px 0 rgba(0,0,0,.15)">🏠</a>
+
+<!-- START -->
+<div class="start-screen" id="startScreen">
+  <div class="panel">
+    <div class="roo" style="font-size:5rem">🦘🦘</div>
+    <h1>Lou &amp; Sue's<br>Times Table Hop</h1>
+    <p class="subtitle">Answer the times tables and hop Lou &amp; Sue all the way up the hill!</p>
+    <div class="levels-list">
+      🌱 1× 2× 10× &nbsp;→&nbsp; 🌿 up to 5× &nbsp;→&nbsp; 🌳 up to 12× &nbsp;→&nbsp; ⭐️ mixed challenge!
+    </div>
+    <button class="big-btn" onclick="startGame()">▶︎ Let's Hop!</button>
+  </div>
+</div>
+
+<!-- LEVEL UP -->
+<div class="level-up" id="levelUpScreen">
+  <div class="panel">
+    <div class="roo" style="font-size:5rem">🎉</div>
+    <h1 id="luTitle">Level Up!</h1>
+    <p class="subtitle" id="luText"></p>
+    <div class="stars" id="luStars">⭐️⭐️⭐️</div>
+    <button class="big-btn" id="luBtn" onclick="nextLevel()">Keep Hopping! →</button>
+  </div>
+</div>
+
+<div class="wrap" id="game" style="display:none">
+  <h1>Times Table Hop</h1>
+  <div class="hud">
+    <div class="chip">Level <span class="big" id="levelNum">1</span></div>
+    <div class="chip">Points <span class="big" id="score">0</span></div>
+    <div class="chip">Streak <span class="big" id="streak">0</span></div>
+  </div>
+
+  <div class="hill">
+    <div class="steps" id="steps"></div>
+    <div class="rooOnHill" id="rooHill">🦘</div>
+  </div>
+
+  <div class="card">
+    <div class="question" id="question">2 × 3</div>
+    <div class="answer-box" id="answer"><span class="cursor">_</span></div>
+
+    <div class="pad">
+      <button class="num" onclick="press('1')">1</button>
+      <button class="num" onclick="press('2')">2</button>
+      <button class="num" onclick="press('3')">3</button>
+      <button class="num" onclick="press('4')">4</button>
+      <button class="num" onclick="press('5')">5</button>
+      <button class="num" onclick="press('6')">6</button>
+      <button class="num" onclick="press('7')">7</button>
+      <button class="num" onclick="press('8')">8</button>
+      <button class="num" onclick="press('9')">9</button>
+      <button class="num del" onclick="del()">⌫</button>
+      <button class="num" onclick="press('0')">0</button>
+      <button class="num go" onclick="submit()">✓</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+  <div class="footer">Made with love by Luella Bees 💛 The Kindness That Grew</div>
+</div>
+
+<script src="kg-scores.js"></script>
+<script>
+/* Each level = which tables to draw from. Answer 6 correctly to hop up a level. */
+const LEVELS = [
+  { name: "Level 1 · Easy Hops 🌱", tables:[1,2,10], max:10 },
+  { name: "Level 2 · Getting Higher 🌿", tables:[2,3,4,5], max:10 },
+  { name: "Level 3 · Big Jumps 🌳", tables:[3,4,6,7,8], max:12 },
+  { name: "Level 4 · Sky High ☁️", tables:[6,7,8,9,11,12], max:12 },
+  { name: "Level 5 · Champion Challenge ⭐️", tables:[2,3,4,5,6,7,8,9,10,11,12], max:12 },
+];
+const CORRECT_TO_LEVEL_UP = 6;
+const STEPS = 6;
+
+let level=0, score=0, streak=0, solved=0, answer="", a=0, b=0;
+const $ = id => document.getElementById(id);
+
+function startGame(){
+  $('startScreen').style.display='none';
+  $('game').style.display='block';
+  level=0; score=0; streak=0;
+  buildSteps();
+  loadLevel();
+}
+
+function buildSteps(){
+  const s=$('steps'); s.innerHTML="";
+  for(let i=0;i<STEPS;i++){
+    const d=document.createElement('div');
+    d.className='step';
+    d.style.height = (28 + i*10) + 'px';
+    s.appendChild(d);
+  }
+}
+
+function loadLevel(){
+  solved=0;
+  $('levelNum').textContent = level+1;
+  moveRoo();
+  nextQ();
+}
+
+function nextQ(){
+  const L=LEVELS[level];
+  a = L.tables[Math.floor(pseudo()*L.tables.length)];
+  b = 1 + Math.floor(pseudo()*L.max);
+  // randomly flip order so it's not always table-first
+  if (pseudo() < 0.5){ const t=a; a=b; b=t; }
+  answer="";
+  $('question').textContent = a + " × " + b;
+  renderAnswer();
+  $('feedback').textContent="";
+}
+
+function press(n){ if(answer.length<3){ answer+=n; renderAnswer(); } }
+function del(){ answer=answer.slice(0,-1); renderAnswer(); }
+function renderAnswer(){
+  $('answer').innerHTML = answer==="" ? '<span class="cursor">_</span>' : answer + '<span class="cursor">_</span>';
+}
+
+function submit(){
+  if(answer==="") return;
+  if(parseInt(answer,10) === a*b){
+    const pts = 10 + streak;
+    score+=pts; streak++; solved++;
+    updateHud(); hop(); burst();
+    $('feedback').style.color="#2b8a3e";
+    $('feedback').textContent = pick(["Yay! 🎉","Perfect! 🌟","You got it! 💛","Boing! 🦘","Superb! ✨"]) + " +" + pts;
+    moveRoo();
+    if(solved>=CORRECT_TO_LEVEL_UP && level<LEVELS.length-1) setTimeout(showLevelUp,1000);
+    else if(solved>=CORRECT_TO_LEVEL_UP) setTimeout(showWin,1000);
+    else setTimeout(nextQ,1000);
+  } else {
+    streak=0; updateHud();
+    $('feedback').style.color="#e8590c";
+    $('feedback').textContent = "Not quite — the answer is " + (a*b) + ". Try the next one! 🌈";
+    answer=""; renderAnswer();
+    setTimeout(nextQ, 1800);
+  }
+}
+
+function moveRoo(){
+  const r=$('rooHill');
+  const frac = solved/CORRECT_TO_LEVEL_UP;
+  const stepIndex = Math.min(STEPS-1, Math.floor(frac*STEPS));
+  r.style.left = (6 + stepIndex*(88/STEPS)) + '%';
+  r.style.bottom = (28 + stepIndex*10) + 'px';
+}
+
+function showLevelUp(){
+  $('luTitle').textContent = "Level " + (level+1) + " Done!";
+  $('luText').textContent = "Lou & Sue hopped right to the top! Next: " + LEVELS[level+1].name;
+  $('luStars').textContent = "⭐️⭐️⭐️";
+  $('luBtn').textContent = "Keep Hopping! →";
+  $('luBtn').onclick = nextLevel;
+  $('levelUpScreen').style.display='flex';
+  bigBurst();
+}
+function nextLevel(){
+  $('levelUpScreen').style.display='none';
+  level=Math.min(level+1, LEVELS.length-1);
+  loadLevel();
+}
+function showWin(){
+  $('luTitle').textContent = "🏆 Times Table Champion!";
+  $('luText').textContent = "You climbed every hill with " + score + " points! You should be SO proud of yourself. 💛";
+  $('luStars').textContent = "🌟🦘🌟";
+  $('luBtn').textContent = "Play Again 🔁";
+  $('luBtn').onclick = ()=>location.reload();
+  $('levelUpScreen').style.display='flex';
+  bigBurst();
+}
+
+function updateHud(){ $('score').textContent=score; $('streak').textContent=streak; if(window.KG) KG.saveBest('times', score); }
+function hop(){ const r=$('rooHill'); r.classList.remove('hop'); void r.offsetWidth; r.classList.add('hop'); }
+function pick(a){ return a[Math.floor(pseudo()*a.length)]; }
+let _seed = 24680;
+function pseudo(){ _seed=(_seed*1103515245+12345)&0x7fffffff; return _seed/0x7fffffff; }
+function burst(){
+  const em=["🍎","🍌","🍓","⭐️","🦘","💛","🍊","✨"];
+  for(let i=0;i<10;i++){
+    const e=document.createElement('div'); e.className='confetti';
+    e.textContent=em[Math.floor(pseudo()*em.length)];
+    e.style.left=(10+pseudo()*80)+'vw'; e.style.top='-40px';
+    e.style.animationDelay=(pseudo()*0.4)+'s';
+    document.body.appendChild(e); setTimeout(()=>e.remove(),2600);
+  }
+}
+function bigBurst(){ for(let k=0;k<3;k++) setTimeout(burst,k*300); }
+
+document.addEventListener('keydown', e=>{
+  if($('game').style.display==='none') return;
+  if(/^[0-9]$/.test(e.key)) press(e.key);
+  else if(e.key==='Backspace'){ del(); e.preventDefault(); }
+  else if(e.key==='Enter') submit();
+});
+
+_seed = (new Date().getSeconds()+3)*17 + 55;
+</script>
+</body>
+</html>

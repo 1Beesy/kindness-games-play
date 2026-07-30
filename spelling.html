@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Lou &amp; Sue's Spelling Safari</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Baloo', system-ui, sans-serif;
+    background: linear-gradient(180deg, #7ec8ff 0%, #b6e3ff 40%, #d8f5c8 70%, #f4e2a1 100%);
+    color: #34495e;
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100%; overflow-x: hidden; text-align: center;
+    user-select: none;
+  }
+  .clouds { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+  .cloud { position: absolute; font-size: 3rem; opacity: 0.8; animation: drift 40s linear infinite; }
+  @keyframes drift { from { transform: translateX(-15vw); } to { transform: translateX(115vw); } }
+
+  .wrap { position: relative; z-index: 2; width: 100%; max-width: 640px; padding: 16px; }
+
+  h1 { font-size: clamp(1.6rem, 6vw, 2.4rem); margin: 8px 0 2px; color: #e67e22;
+       text-shadow: 2px 2px 0 #fff, 4px 4px 0 rgba(0,0,0,.1); }
+  .subtitle { margin: 0 0 10px; font-size: 1rem; color: #5b7a3a; font-weight: bold; }
+
+  .hud { display: flex; justify-content: space-around; gap: 8px; margin-bottom: 12px; }
+  .hud .chip {
+    background: #fff; border-radius: 18px; padding: 8px 14px; flex: 1;
+    box-shadow: 0 4px 0 rgba(0,0,0,.12); font-weight: bold; font-size: .95rem;
+  }
+  .chip .big { display: block; font-size: 1.5rem; color: #e67e22; }
+
+  .card {
+    background: rgba(255,255,255,.92); border-radius: 26px; padding: 22px 18px;
+    box-shadow: 0 10px 0 rgba(0,0,0,.1); margin-bottom: 16px;
+  }
+
+  .roo { font-size: 4.5rem; line-height: 1; display: inline-block; }
+  .roo.hop { animation: hop .6s ease; }
+  @keyframes hop { 0%,100%{transform:translateY(0)} 30%{transform:translateY(-30px) rotate(-8deg)} 60%{transform:translateY(-10px)} }
+
+  .prompt { font-size: 1.15rem; margin: 10px 0 4px; font-weight: bold; }
+  .sentence { font-size: 1rem; color: #7f8c8d; font-style: italic; min-height: 1.3em; margin-bottom: 8px; }
+
+  .slots { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 14px 0; min-height: 60px; }
+  .slot {
+    width: 46px; height: 56px; border-radius: 12px; background: #fdf3d7;
+    border: 3px dashed #e0b04a; display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; font-weight: bold; color: #34495e; text-transform: uppercase;
+  }
+  .slot.filled { border-style: solid; background: #fff6e0; }
+
+  .keys { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 10px; }
+  .key {
+    padding: 12px 0; border: none; border-radius: 12px; background: #ffd166;
+    font-size: 1.15rem; font-weight: bold; color: #7a4e00; cursor: pointer;
+    box-shadow: 0 4px 0 #e0a93c; text-transform: uppercase; font-family: inherit;
+    transition: transform .05s;
+  }
+  .key:active { transform: translateY(3px); box-shadow: 0 1px 0 #e0a93c; }
+
+  .controls { display: flex; gap: 8px; margin-top: 12px; }
+  .btn {
+    flex: 1; padding: 14px; border: none; border-radius: 16px; font-size: 1rem;
+    font-weight: bold; cursor: pointer; font-family: inherit; box-shadow: 0 4px 0 rgba(0,0,0,.18);
+    transition: transform .05s;
+  }
+  .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,.18); }
+  .btn.hear { background: #4dabf7; color: #fff; }
+  .btn.hint { background: #b197fc; color: #fff; }
+  .btn.back { background: #ff8787; color: #fff; }
+  .btn.go   { background: #69db7c; color: #14532d; }
+
+  .feedback { font-size: 1.3rem; font-weight: bold; min-height: 1.5em; margin-top: 10px; }
+
+  .stars { font-size: 1.4rem; letter-spacing: 4px; margin: 6px 0; }
+
+  .start-screen, .level-up { position: fixed; inset: 0; z-index: 10; display: flex;
+    flex-direction: column; align-items: center; justify-content: center; padding: 24px;
+    background: linear-gradient(180deg, #7ec8ff, #d8f5c8); }
+  .level-up { display: none; background: rgba(0,0,0,.55); }
+  .level-up .panel, .start-screen .panel {
+    background: #fff; border-radius: 28px; padding: 28px 22px; max-width: 460px;
+    box-shadow: 0 12px 0 rgba(0,0,0,.15);
+  }
+  .big-btn {
+    margin-top: 18px; padding: 16px 34px; font-size: 1.3rem; border: none; border-radius: 20px;
+    background: #ffd166; color: #7a4e00; font-weight: bold; cursor: pointer; font-family: inherit;
+    box-shadow: 0 6px 0 #e0a93c;
+  }
+  .big-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #e0a93c; }
+  .levels-list { font-size: .95rem; color: #7f8c8d; margin-top: 10px; }
+  .footer { font-size: .8rem; color: #6b8e4e; margin: 6px 0 20px; z-index:2; }
+  .confetti { position: fixed; font-size: 1.6rem; z-index: 20; pointer-events: none; animation: fall 2.5s linear forwards; }
+  @keyframes fall { to { transform: translateY(105vh) rotate(360deg); opacity: 0; } }
+</style>
+</head>
+<body>
+<a href="index.html" style="position:fixed;top:8px;left:8px;z-index:30;background:#fff;border-radius:14px;padding:6px 12px;text-decoration:none;font-size:1.1rem;box-shadow:0 3px 0 rgba(0,0,0,.15)">🏠</a>
+<div class="clouds">
+  <div class="cloud" style="top:8%; animation-delay:0s">☁️</div>
+  <div class="cloud" style="top:22%; animation-delay:-12s">☁️</div>
+  <div class="cloud" style="top:14%; animation-delay:-26s">🦋</div>
+</div>
+
+<!-- START SCREEN -->
+<div class="start-screen" id="startScreen">
+  <div class="panel">
+    <div class="roo" style="font-size:5rem">🦘🦘</div>
+    <h1>Lou &amp; Sue's<br>Spelling Safari</h1>
+    <p class="subtitle">Listen to the word, then hop the letters into place!</p>
+    <div class="levels-list">
+      🌱 Level 1 — little words &nbsp;•&nbsp; 🌿 gets trickier &nbsp;•&nbsp; 🌳 super speller!
+    </div>
+    <button class="big-btn" onclick="startGame()">▶︎ Let's Play!</button>
+  </div>
+</div>
+
+<!-- LEVEL UP SCREEN -->
+<div class="level-up" id="levelUpScreen">
+  <div class="panel">
+    <div class="roo" style="font-size:5rem">🎉</div>
+    <h1 id="luTitle">Level Up!</h1>
+    <p class="subtitle" id="luText"></p>
+    <div class="stars" id="luStars">⭐️⭐️⭐️</div>
+    <button class="big-btn" onclick="nextLevel()">Keep Hopping! →</button>
+  </div>
+</div>
+
+<div class="wrap" id="game" style="display:none">
+  <h1>Spelling Safari</h1>
+  <div class="hud">
+    <div class="chip">Level <span class="big" id="levelNum">1</span></div>
+    <div class="chip">Points <span class="big" id="score">0</span></div>
+    <div class="chip">Streak <span class="big" id="streak">0</span></div>
+  </div>
+
+  <div class="card">
+    <div class="roo" id="roo">🦘</div>
+    <div class="prompt">🔊 What word did Lou &amp; Sue say?</div>
+    <div class="sentence" id="sentence"></div>
+    <div class="slots" id="slots"></div>
+
+    <div class="controls">
+      <button class="btn hear" onclick="speakWord()">🔊 Hear it</button>
+      <button class="btn hint" onclick="giveHint()">💡 Hint</button>
+      <button class="btn back" onclick="backspace()">⌫ Undo</button>
+    </div>
+
+    <div class="keys" id="keys"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+  <div class="footer">Made with love by Luella Bees 💛 The Kindness That Grew</div>
+</div>
+
+<script src="kg-scores.js"></script>
+<script>
+/* ---------- Word banks, graded by level (age ~6–10) ---------- */
+const LEVELS = [
+  { name: "Level 1 · Little Seeds 🌱", words: [
+    {w:"cat", s:"The cat sat on the mat."},
+    {w:"dog", s:"My dog likes to run."},
+    {w:"sun", s:"The sun is warm and bright."},
+    {w:"bug", s:"A little bug crawled by."},
+    {w:"hop", s:"Lou and Sue like to hop."},
+    {w:"red", s:"The apple is red."},
+    {w:"fun", s:"Playing is so much fun."},
+    {w:"bee", s:"A busy bee buzzed past."},
+  ]},
+  { name: "Level 2 · Growing 🌿", words: [
+    {w:"tree", s:"A bird sat in the tree."},
+    {w:"kind", s:"Being kind makes friends."},
+    {w:"jump", s:"Watch the kangaroo jump!"},
+    {w:"frog", s:"The green frog went splash."},
+    {w:"star", s:"One star shone in the sky."},
+    {w:"seed", s:"Plant a seed and watch it grow."},
+    {w:"play", s:"Let's play in the garden."},
+    {w:"fish", s:"The fish swam in the pond."},
+  ]},
+  { name: "Level 3 · Blossoming 🌸", words: [
+    {w:"snake", s:"The snake slid through the grass."},
+    {w:"happy", s:"A hug makes me feel happy."},
+    {w:"fruit", s:"Lou collected sweet fruit."},
+    {w:"friend", s:"A good friend is kind."},
+    {w:"garden", s:"Flowers grow in the garden."},
+    {w:"jungle", s:"The jungle is full of animals."},
+    {w:"orange", s:"An orange is round and juicy."},
+    {w:"bounce", s:"The ball began to bounce."},
+  ]},
+  { name: "Level 4 · Tall Tree 🌳", words: [
+    {w:"kindness", s:"Kindness grows when you share it."},
+    {w:"kangaroo", s:"A kangaroo hops on strong legs."},
+    {w:"beautiful", s:"The flower is beautiful."},
+    {w:"adventure", s:"Every day is a new adventure."},
+    {w:"together", s:"We are stronger together."},
+    {w:"rainbow", s:"A rainbow filled the sky."},
+    {w:"butterfly", s:"The butterfly landed softly."},
+    {w:"treasure", s:"Kindness is a real treasure."},
+  ]},
+  { name: "Level 5 · Super Speller ⭐️", words: [
+    {w:"generous", s:"A generous heart loves to give."},
+    {w:"wonderful", s:"You did a wonderful job."},
+    {w:"celebrate", s:"Let's celebrate together!"},
+    {w:"imagine", s:"Close your eyes and imagine."},
+    {w:"champion", s:"You are a spelling champion!"},
+    {w:"grateful", s:"I am grateful for my friends."},
+    {w:"remarkable", s:"What a remarkable day."},
+    {w:"encourage", s:"Kind words encourage others."},
+  ]},
+];
+
+const WORDS_TO_LEVEL_UP = 5;
+
+let level = 0, score = 0, streak = 0, solvedThisLevel = 0;
+let current = null, typed = "", pool = [], hintUsed = false;
+
+const $ = id => document.getElementById(id);
+
+function startGame(){
+  $('startScreen').style.display = 'none';
+  $('game').style.display = 'block';
+  level = 0; score = 0; streak = 0;
+  updateHud();
+  loadLevel();
+}
+
+function loadLevel(){
+  solvedThisLevel = 0;
+  pool = shuffle([...LEVELS[level].words]);
+  $('levelNum').textContent = level + 1;
+  nextWord();
+}
+
+function nextWord(){
+  if (pool.length === 0) pool = shuffle([...LEVELS[level].words]);
+  current = pool.pop();
+  typed = "";
+  hintUsed = false;
+  $('feedback').textContent = "";
+  $('sentence').textContent = "";
+  renderSlots();
+  renderKeys();
+  setTimeout(speakWord, 350);
+}
+
+function renderSlots(){
+  const slots = $('slots');
+  slots.innerHTML = "";
+  for (let i = 0; i < current.w.length; i++){
+    const d = document.createElement('div');
+    d.className = 'slot' + (typed[i] ? ' filled' : '');
+    d.textContent = typed[i] ? typed[i] : "";
+    slots.appendChild(d);
+  }
+}
+
+function renderKeys(){
+  // letters of the word + a few decoys, shuffled — tap friendly
+  const letters = current.w.split("");
+  const decoyCount = Math.min(5, Math.max(2, 8 - letters.length));
+  const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+  const decoys = [];
+  while (decoys.length < decoyCount){
+    const c = alphabet[Math.floor(pseudo()*26)];
+    decoys.push(c);
+  }
+  const keyset = shuffle([...letters, ...decoys]);
+  const keys = $('keys');
+  keys.innerHTML = "";
+  keyset.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'key';
+    b.textContent = c;
+    b.onclick = () => typeLetter(c);
+    keys.appendChild(b);
+  });
+}
+
+function typeLetter(c){
+  if (typed.length >= current.w.length) return;
+  typed += c;
+  renderSlots();
+  if (typed.length === current.w.length) checkWord();
+}
+
+function backspace(){
+  typed = typed.slice(0, -1);
+  renderSlots();
+  $('feedback').textContent = "";
+}
+
+function checkWord(){
+  if (typed.toLowerCase() === current.w.toLowerCase()){
+    const pts = (hintUsed ? 5 : 10) + streak;
+    score += pts; streak++; solvedThisLevel++;
+    updateHud();
+    hop();
+    burst();
+    $('feedback').style.color = "#2b8a3e";
+    $('feedback').textContent = pick(["Yay! 🎉","Brilliant! 🌟","You got it! 💛","Spot on! 🦘","Amazing! ✨"]) + " +" + pts;
+    if (solvedThisLevel >= WORDS_TO_LEVEL_UP && level < LEVELS.length - 1){
+      setTimeout(showLevelUp, 1100);
+    } else if (solvedThisLevel >= WORDS_TO_LEVEL_UP){
+      setTimeout(showWin, 1100);
+    } else {
+      setTimeout(nextWord, 1100);
+    }
+  } else {
+    streak = 0; updateHud();
+    $('feedback').style.color = "#e8590c";
+    $('feedback').textContent = "Oops! Try again 🌈";
+    setTimeout(() => { typed = ""; renderSlots(); $('feedback').textContent=""; speakWord(); }, 1100);
+  }
+}
+
+function giveHint(){
+  hintUsed = true;
+  $('sentence').textContent = current.s + "  (starts with “" + current.w[0].toUpperCase() + "”)";
+  speakWord();
+}
+
+function speakWord(){
+  if (!('speechSynthesis' in window)) { $('sentence').textContent = current.s; return; }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(current.w);
+  u.rate = 0.75; u.pitch = 1.15;
+  const say = () => window.speechSynthesis.speak(u);
+  say();
+  // gentle second hint: the word in a sentence
+  setTimeout(() => {
+    if (!current) return;
+    if (!hintUsed && !$('sentence').textContent) $('sentence').textContent = "🔊 “" + current.w + "”";
+  }, 600);
+}
+
+function showLevelUp(){
+  const s = $('levelUpScreen');
+  $('luTitle').textContent = "Level " + (level+1) + " Complete!";
+  $('luText').textContent = "You spelled every word! Next up: " + LEVELS[level+1].name;
+  $('luStars').textContent = "⭐️".repeat(3);
+  s.style.display = 'flex';
+  bigBurst();
+}
+
+function nextLevel(){
+  $('levelUpScreen').style.display = 'none';
+  level = Math.min(level + 1, LEVELS.length - 1);
+  loadLevel();
+}
+
+function showWin(){
+  const s = $('levelUpScreen');
+  $('luTitle').textContent = "🏆 Super Speller!";
+  $('luText').textContent = "You finished the whole Spelling Safari with " + score + " points! You should be SO proud of yourself. 💛";
+  $('luStars').textContent = "🌟🦘🌟";
+  document.querySelector('#levelUpScreen .big-btn').textContent = "Play Again 🔁";
+  document.querySelector('#levelUpScreen .big-btn').onclick = () => { location.reload(); };
+  s.style.display = 'flex';
+  bigBurst();
+}
+
+/* ---------- helpers ---------- */
+function updateHud(){ $('score').textContent = score; $('streak').textContent = streak; if(window.KG) KG.saveBest('spelling', score); }
+function hop(){ const r = $('roo'); r.classList.remove('hop'); void r.offsetWidth; r.classList.add('hop'); }
+function pick(a){ return a[Math.floor(pseudo()*a.length)]; }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(pseudo()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+let _seed = 12345;
+function pseudo(){ _seed = (_seed*1103515245 + 12345) & 0x7fffffff; return _seed / 0x7fffffff; }
+
+function burst(){
+  const emojis = ["🍎","🍌","🍓","⭐️","🦘","💛","🍊","✨"];
+  for (let i=0;i<10;i++){
+    const e = document.createElement('div');
+    e.className='confetti'; e.textContent = emojis[Math.floor(pseudo()*emojis.length)];
+    e.style.left = (10 + pseudo()*80) + 'vw'; e.style.top = '-40px';
+    e.style.animationDelay = (pseudo()*0.4)+'s';
+    document.body.appendChild(e);
+    setTimeout(()=>e.remove(), 2600);
+  }
+}
+function bigBurst(){ for(let k=0;k<3;k++) setTimeout(burst, k*300); }
+
+/* keyboard support for laptops */
+document.addEventListener('keydown', e => {
+  if ($('game').style.display === 'none') return;
+  if (e.key === 'Backspace'){ backspace(); e.preventDefault(); }
+  else if (/^[a-zA-Z]$/.test(e.key)) typeLetter(e.key.toLowerCase());
+});
+
+// seed randomness a little from load time so it's not identical every open
+_seed = (new Date().getSeconds() + 7) * 31 + 100;
+</script>
+</body>
+</html>
