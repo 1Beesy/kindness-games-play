@@ -352,9 +352,20 @@ function giveHint(){
   speakWord();
 }
 
+let currentAudio = null;
 function speakWord(){
+  // stop any prior playback so words never overlap
+  if (currentAudio){ try { currentAudio.pause(); } catch(e){} currentAudio = null; }
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  // play the pre-recorded clip (clear, consistent on every device); fall back to browser voice if it fails
+  const a = new Audio('audio/' + current.w + '.mp3');
+  currentAudio = a;
+  a.onerror = speakFallback;
+  a.play().catch(speakFallback);
+  // deliberately NO on-screen word — sound only, so we don't give the answer away
+}
+function speakFallback(){
   if (!('speechSynthesis' in window)) {
-    // No voice on this device — fall back to the masked sentence so it's still playable, but NEVER show the word
     if (!$('sentence').textContent) $('sentence').textContent = "🔊 " + maskWord(current.s, current.w);
     return;
   }
@@ -362,9 +373,8 @@ function speakWord(){
   if(!CHOSEN_VOICE) pickVoice();
   const u = new SpeechSynthesisUtterance(current.w);
   if(CHOSEN_VOICE) u.voice = CHOSEN_VOICE;
-  u.rate = 0.7; u.pitch = 1.05; u.volume = 1;   // slower + clearer for young ears
+  u.rate = 0.7; u.pitch = 1.05; u.volume = 1;
   window.speechSynthesis.speak(u);
-  // deliberately NO on-screen word — sound only, so we don't give the answer away
 }
 
 function showLevelUp(){
