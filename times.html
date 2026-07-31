@@ -80,7 +80,7 @@
     <h1>Lou &amp; Sue's<br>Times Table Hop</h1>
     <p class="subtitle">Answer the times tables and hop Lou &amp; Sue all the way up the hill!</p>
     <div class="levels-list">
-      🌱 1× 2× 10× &nbsp;→&nbsp; 🌿 up to 5× &nbsp;→&nbsp; 🌳 up to 12× &nbsp;→&nbsp; ⭐️ mixed challenge!
+      🌱 times tables &nbsp;→&nbsp; ➗ division &nbsp;→&nbsp; ❓ missing numbers &nbsp;→&nbsp; 🚀 big multiply &nbsp;→&nbsp; 👑 grand champion!
     </div>
     <button class="big-btn" onclick="startGame()">▶︎ Let's Hop!</button>
   </div>
@@ -135,18 +135,23 @@
 
 <script src="kg-scores.js"></script>
 <script>
-/* Each level = which tables to draw from. Answer 6 correctly to hop up a level. */
+/* Each level = a question TYPE + which tables to draw from. Answer 6 correctly to hop up.
+   Progression is curriculum-shaped: tables → division → missing number → big multiply → mixed. */
 const LEVELS = [
-  { name: "Level 1 · Easy Hops 🌱", tables:[1,2,10], max:10 },
-  { name: "Level 2 · Getting Higher 🌿", tables:[2,3,4,5], max:10 },
-  { name: "Level 3 · Big Jumps 🌳", tables:[3,4,6,7,8], max:12 },
-  { name: "Level 4 · Sky High ☁️", tables:[6,7,8,9,11,12], max:12 },
-  { name: "Level 5 · Champion Challenge ⭐️", tables:[2,3,4,5,6,7,8,9,10,11,12], max:12 },
+  { name: "Level 1 · Easy Hops 🌱",       type:'mul',     tables:[1,2,10],                    max:10 },
+  { name: "Level 2 · Getting Higher 🌿",   type:'mul',     tables:[2,3,4,5],                   max:10 },
+  { name: "Level 3 · Big Jumps 🌳",        type:'mul',     tables:[3,4,6,7,8],                 max:12 },
+  { name: "Level 4 · Sky High ☁️",         type:'mul',     tables:[6,7,8,9,11,12],             max:12 },
+  { name: "Level 5 · Times Champion ⭐️",    type:'mul',     tables:[2,3,4,5,6,7,8,9,10,11,12],  max:12 },
+  { name: "Level 6 · Division Dash ➗",      type:'div',     tables:[2,3,4,5,6,7,8,9,10],        max:12 },
+  { name: "Level 7 · Missing Number ❓",     type:'missing', tables:[2,3,4,5,6,7,8,9],           max:12 },
+  { name: "Level 8 · Big Multiply 🚀",       type:'mul2' },
+  { name: "Level 9 · Grand Champion 👑",     type:'mixed',   tables:[2,3,4,5,6,7,8,9,10,11,12],  max:12 },
 ];
 const CORRECT_TO_LEVEL_UP = 6;
 const STEPS = 6;
 
-let level=0, score=0, streak=0, solved=0, answer="", a=0, b=0;
+let level=0, score=0, streak=0, solved=0, answer="", expected=0;
 const $ = id => document.getElementById(id);
 
 function startGame(){
@@ -175,15 +180,39 @@ function loadLevel(){
 }
 
 function nextQ(){
-  const L=LEVELS[level];
-  a = L.tables[Math.floor(pseudo()*L.tables.length)];
-  b = 1 + Math.floor(pseudo()*L.max);
-  // randomly flip order so it's not always table-first
-  if (pseudo() < 0.5){ const t=a; a=b; b=t; }
+  const q = genQ(LEVELS[level]);
+  expected = q.ans;
   answer="";
-  $('question').textContent = a + " × " + b;
+  $('question').textContent = q.text;
   renderAnswer();
   $('feedback').textContent="";
+}
+
+/* Build one question {text, ans} for the level's type. All answers stay ≤ 3 digits. */
+function genQ(L){
+  let type = L.type;
+  if (type === 'mixed') type = pick(['mul','div','missing','mul2']);
+  const table = () => L.tables[Math.floor(pseudo()*L.tables.length)];
+  const upto  = () => 1 + Math.floor(pseudo()*((L.max||12)));
+
+  if (type === 'div'){
+    const d = table(), q = upto();            // divisor × quotient = dividend
+    return { text: (d*q) + " ÷ " + d, ans: q };
+  }
+  if (type === 'missing'){
+    const a = table(), b = upto(), p = a*b;    // hide one factor
+    return pseudo() < 0.5 ? { text: a + " × ? = " + p, ans: b }
+                          : { text: "? × " + b + " = " + p, ans: a };
+  }
+  if (type === 'mul2'){
+    const a = 11 + Math.floor(pseudo()*17);    // 11–27
+    const b = 2  + Math.floor(pseudo()*8);     // 2–9  (max 27×9 = 243)
+    return { text: a + " × " + b, ans: a*b };
+  }
+  // default: multiplication, order flipped randomly
+  let a = table(), b = upto();
+  if (pseudo() < 0.5){ const t=a; a=b; b=t; }
+  return { text: a + " × " + b, ans: a*b };
 }
 
 function press(n){ if(answer.length<3){ answer+=n; renderAnswer(); } }
@@ -194,7 +223,7 @@ function renderAnswer(){
 
 function submit(){
   if(answer==="") return;
-  if(parseInt(answer,10) === a*b){
+  if(parseInt(answer,10) === expected){
     const pts = 10 + streak;
     score+=pts; streak++; solved++;
     updateHud(); hop(); burst();
@@ -207,7 +236,7 @@ function submit(){
   } else {
     streak=0; updateHud();
     $('feedback').style.color="#e8590c";
-    $('feedback').textContent = "Not quite — the answer is " + (a*b) + ". Try the next one! 🌈";
+    $('feedback').textContent = "Not quite — the answer is " + expected + ". Try the next one! 🌈";
     answer=""; renderAnswer();
     setTimeout(nextQ, 1800);
   }

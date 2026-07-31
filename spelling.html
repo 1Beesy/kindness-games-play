@@ -218,6 +218,31 @@ let current = null, typed = "", pool = [], hintUsed = false;
 
 const $ = id => document.getElementById(id);
 
+/* ---------- Pick the clearest available voice (Aussie first) ---------- */
+let CHOSEN_VOICE = null;
+function pickVoice(){
+  if(!('speechSynthesis' in window)) return;
+  const voices = window.speechSynthesis.getVoices();
+  if(!voices || !voices.length) return;
+  // known clear, natural voices across Mac / iOS / Chrome
+  const preferred = ['Karen','Catherine','Matilda','Zoe','Serena','Samantha',
+                     'Moira','Tessa','Daniel','Google UK English Female','Google US English'];
+  for(const name of preferred){
+    const v = voices.find(v => v.name && v.name.indexOf(name) !== -1);
+    if(v){ CHOSEN_VOICE = v; return; }
+  }
+  // otherwise best English by region, skipping robotic "compact"/"eloquence" voices
+  for(const lang of ['en-AU','en-GB','en-US','en']){
+    const v = voices.find(v => v.lang && v.lang.indexOf(lang) === 0 && !/compact|eloquence/i.test(v.name));
+    if(v){ CHOSEN_VOICE = v; return; }
+  }
+  CHOSEN_VOICE = voices.find(v => /^en/i.test(v.lang)) || voices[0];
+}
+if('speechSynthesis' in window){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice; // voices often load async
+}
+
 function startGame(){
   $('startScreen').style.display = 'none';
   $('game').style.display = 'block';
@@ -315,24 +340,31 @@ function checkWord(){
   }
 }
 
+// Blank the target word out of its sentence so hints never spell it for them.
+function maskWord(sentence, word){
+  return sentence.replace(new RegExp('\\b' + word + '\\b', 'ig'), '_'.repeat(word.length));
+}
+
 function giveHint(){
   hintUsed = true;
-  $('sentence').textContent = current.s + "  (starts with “" + current.w[0].toUpperCase() + "”)";
+  // context sentence with the word hidden, plus just the first letter — help, not the answer
+  $('sentence').textContent = maskWord(current.s, current.w) + "  (starts with “" + current.w[0].toUpperCase() + "”)";
   speakWord();
 }
 
 function speakWord(){
-  if (!('speechSynthesis' in window)) { $('sentence').textContent = current.s; return; }
+  if (!('speechSynthesis' in window)) {
+    // No voice on this device — fall back to the masked sentence so it's still playable, but NEVER show the word
+    if (!$('sentence').textContent) $('sentence').textContent = "🔊 " + maskWord(current.s, current.w);
+    return;
+  }
   window.speechSynthesis.cancel();
+  if(!CHOSEN_VOICE) pickVoice();
   const u = new SpeechSynthesisUtterance(current.w);
-  u.rate = 0.75; u.pitch = 1.15;
-  const say = () => window.speechSynthesis.speak(u);
-  say();
-  // gentle second hint: the word in a sentence
-  setTimeout(() => {
-    if (!current) return;
-    if (!hintUsed && !$('sentence').textContent) $('sentence').textContent = "🔊 “" + current.w + "”";
-  }, 600);
+  if(CHOSEN_VOICE) u.voice = CHOSEN_VOICE;
+  u.rate = 0.7; u.pitch = 1.05; u.volume = 1;   // slower + clearer for young ears
+  window.speechSynthesis.speak(u);
+  // deliberately NO on-screen word — sound only, so we don't give the answer away
 }
 
 function showLevelUp(){
