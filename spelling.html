@@ -281,17 +281,31 @@ function renderSlots(){
   }
 }
 
+// Never let the row of tiles accidentally spell something rude (kids' game).
+const BANNED = ["fuck","shit","cunt","cock","dick","piss","slut","twat","wank","bitch",
+  "bastard","rape","nazi","penis","vagina","whore","prick","bollock","arse","ass","sex",
+  "tit","cum","poo","wee","fart","boob","butt","damn","hell","crap","turd","anus","anal",
+  "jizz","hoe","fag","dyke","spic","chink","coon","wog","paki","kike","nigg","retard",
+  "scum","suck","kill","die"];
+function tilesClean(arr){
+  const s = arr.join("").toLowerCase();
+  for (let i = 0; i < BANNED.length; i++){ if (s.indexOf(BANNED[i]) !== -1) return false; }
+  return true;
+}
+
 function renderKeys(){
   // letters of the word + a few decoys, shuffled — tap friendly
   const letters = current.w.split("");
   const decoyCount = Math.min(5, Math.max(2, 8 - letters.length));
   const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
-  const decoys = [];
-  while (decoys.length < decoyCount){
-    const c = alphabet[Math.floor(pseudo()*26)];
-    decoys.push(c);
-  }
-  const keyset = shuffle([...letters, ...decoys]);
+  // re-roll decoys + order until the tile row spells nothing offensive
+  let keyset, attempts = 0;
+  do {
+    const decoys = [];
+    while (decoys.length < decoyCount){ decoys.push(alphabet[Math.floor(pseudo()*26)]); }
+    keyset = shuffle([...letters, ...decoys]);
+    attempts++;
+  } while (!tilesClean(keyset) && attempts < 60);
   const keys = $('keys');
   keys.innerHTML = "";
   keyset.forEach(c => {
