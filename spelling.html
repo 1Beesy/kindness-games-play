@@ -434,7 +434,7 @@ function speakWord(){
   if (currentAudio){ try { currentAudio.pause(); } catch(e){} currentAudio = null; }
   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   // play the pre-recorded clip (clear, consistent on every device); fall back to browser voice if it fails
-  const a = new Audio('audio/' + current.w + '.mp3?v=alice');
+  const a = new Audio('audio/' + current.w + '.mp3?v=jodie1');
   currentAudio = a;
   a.onerror = speakFallback;
   a.play().catch(speakFallback);
