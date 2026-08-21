@@ -69,6 +69,17 @@
 
   .footer { font-family:'Baloo 2'; font-size: .9rem; font-weight: 600; color: #5f7a3f; margin-top: 22px; line-height: 1.5; }
   .footer .love { color: #8a7a55; font-weight: 500; }
+
+  .optin { background:#f3e7c4; border:2px solid #e6cf95; border-radius:18px; padding:16px 16px 18px; margin:22px 0 0; box-shadow:0 3px 0 rgba(122,74,36,.08); }
+  .optin h2 { font-family:'Baloo 2'; font-weight:800; font-size:1.1rem; color:#7a4a24; margin:0 0 4px; }
+  .optin p { font-size:.88rem; color:#6b5a41; margin:0 0 12px; }
+  .optin form { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+  .optin input { font-family:inherit; font-size:1rem; padding:9px 13px; border:2px solid #dcc48a; border-radius:11px; width:210px; max-width:70vw; color:#5a4a33; background:#fffdf6; text-align:center; }
+  .optin input:focus { outline:none; border-color:#cf7a4f; }
+  .optin button { font-family:'Baloo 2'; font-weight:700; font-size:1rem; color:#fdf6e6; background:#cf7a4f; border:none; border-radius:11px; padding:9px 18px; box-shadow:0 3px 0 rgba(122,74,36,.22); cursor:pointer; }
+  .optin button:active { transform:translateY(2px); box-shadow:0 1px 0 rgba(122,74,36,.22); }
+  .optin .done { font-family:'Baloo 2'; font-weight:700; color:#5f7a3f; font-size:1rem; margin:4px 0 0; line-height:1.4; }
+  .optin .err { color:#c0512b; font-size:.82rem; margin:6px 0 0; min-height:1em; }
 </style>
 </head>
 <body>
@@ -121,6 +132,16 @@
       </a>
     </div>
 
+    <div class="optin" id="optin">
+      <h2>💌 Want more from Luella?</h2>
+      <p>Pop your email in and we'll let you know when Luella shares new games and new books. No spam, just kindness. 🌱</p>
+      <form id="optin-form" novalidate>
+        <input id="optin-email" type="email" inputmode="email" placeholder="grown-up's email" autocomplete="email" required>
+        <button type="submit">Keep me posted</button>
+      </form>
+      <div class="err" id="optin-err"></div>
+    </div>
+
     <div class="footer">
       Made with love by <strong>Luella Bees</strong> 💛<br>
       <span class="love">from her book <em>The Kindness That Grew</em> · kindness grows when you share it 🌱</span>
@@ -142,6 +163,24 @@
   refresh();
   window.addEventListener('pageshow', refresh);
   document.addEventListener('visibilitychange', function () { if (!document.hidden) refresh(); });
+
+  // Optional email opt-in — logs to the existing Kindness sheet (type: games-optin, no payment email).
+  var OPTIN_ENDPOINT = "https://script.google.com/macros/s/AKfycby37lv5kxVDIDAI77jSxijNvVxhqgMJVeHkJF_p8Tf2hbdpTy8TdkN9caEPz3rMYubPnA/exec";
+  document.getElementById('optin-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = document.getElementById('optin-email').value.trim();
+    var err = document.getElementById('optin-err');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Please pop in a valid email 🙂'; return; }
+    err.textContent = '';
+    try {
+      fetch(OPTIN_ENDPOINT, {
+        method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ type: 'games-optin', email: email, name: (KG.getName() || ''), ts: new Date().toISOString() })
+      });
+    } catch (_) {}
+    document.getElementById('optin').innerHTML =
+      '<p class="done">Thanks! You\'re on Luella\'s list 💛<br>She\'ll wave when there\'s something new. 🦘</p>';
+  });
 </script>
 </body>
 </html>
