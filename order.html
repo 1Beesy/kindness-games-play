@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Buy The Kindness That Grew — Luella Bees</title>
+<meta name="description" content="Order your copy of The Kindness That Grew by Luella Bees. $25, with every dollar of profit going to the Starlight Children's Foundation.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Fredoka:wght@400;500;600&display=swap');
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Fredoka','Baloo 2',sans-serif; color: #5a4a33;
+    background: #e9dcc0; min-height: 100vh; padding: 14px; text-align: center;
+  }
+  .page {
+    position: relative; max-width: 480px; margin: 0 auto; padding: 22px 18px 26px;
+    background: #f7f0da; border: 2px solid #c9ad74; border-radius: 22px;
+    box-shadow: inset 0 0 0 5px #f7f0da, inset 0 0 0 7px #dcc48a, 0 8px 24px rgba(122,74,36,.15);
+  }
+  .back { display:inline-block; font-family:'Baloo 2'; font-weight:700; font-size:.85rem; color:#8a7a55;
+          text-decoration:none; margin:0 0 6px; }
+  .lou { width: 118px; margin: 2px auto 4px; display: block; border-radius: 12px;
+         filter: drop-shadow(0 6px 6px rgba(122,74,36,.18)); }
+  .badge {
+    display: inline-block; background: #cf7a4f; color: #fdf6e6; font-family:'Baloo 2';
+    font-weight: 700; font-size: .82rem; letter-spacing: .5px; padding: 5px 16px;
+    border-radius: 30px; box-shadow: 0 3px 0 rgba(122,74,36,.22); transform: rotate(-1.5deg);
+  }
+  h1 { font-family:'Baloo 2',sans-serif; font-weight: 800; font-size: clamp(1.4rem,5.5vw,1.85rem);
+       color: #7a4a24; line-height: 1.1; margin: 12px 0 2px; text-shadow: 0 1.5px 0 rgba(255,255,255,.7); }
+  .by { font-family:'Baloo 2'; font-size: .95rem; font-weight: 600; color: #5f7a3f; margin: 0 0 10px; }
+
+  .price-line { font-family:'Baloo 2'; font-weight:800; color:#5f7a3f; font-size:1.15rem; margin:0 0 4px; }
+  .starlight { background:#f3e7c4; border:1.5px solid #e6cf95; border-radius:14px; padding:9px 12px;
+       margin:12px auto 4px; font-size:.9rem; color:#7a4a24; max-width:400px; line-height:1.4; }
+  .starlight strong { color:#cf7a4f; }
+  .pickup { font-size:.9rem; color:#6b5a41; margin:12px auto 18px; max-width:400px; line-height:1.45; }
+  .pickup strong { color:#7a4a24; }
+
+  form { display:grid; gap:12px; text-align:left; max-width:360px; margin:0 auto; }
+  .field label { display:block; font-family:'Baloo 2'; font-weight:700; color:#7a4a24; font-size:.9rem; margin:0 0 4px; }
+  .field input, .field select {
+    font-family:inherit; font-size:1.05rem; padding:10px 13px; border:2px solid #dcc48a;
+    border-radius:12px; width:100%; color:#5a4a33; background:#fffdf6;
+  }
+  .field input:focus, .field select:focus { outline:none; border-color:#cf7a4f; }
+
+  .total { font-family:'Baloo 2'; font-weight:800; color:#7a4a24; font-size:1.25rem; margin:6px 0 2px; }
+  .total .amt { color:#5f7a3f; }
+
+  button.buy {
+    font-family:'Baloo 2'; font-weight:800; font-size:1.1rem; color:#fdf6e6; background:#5f7a3f;
+    border:none; border-radius:13px; padding:13px 22px; box-shadow:0 4px 0 rgba(122,74,36,.22);
+    cursor:pointer; margin-top:4px;
+  }
+  button.buy:active { transform:translateY(2px); box-shadow:0 2px 0 rgba(122,74,36,.22); }
+  button.buy:disabled { opacity:.55; }
+  .err { color:#c0512b; font-size:.82rem; min-height:1em; margin:2px 0 0; }
+  .fine { font-size:.8rem; color:#8a7a55; margin:14px 0 0; line-height:1.45; }
+
+  .done { text-align:center; }
+  .done .tick { font-size:2.6rem; }
+  .done h2 { font-family:'Baloo 2'; font-weight:800; color:#7a4a24; font-size:1.3rem; margin:8px 0 6px; }
+  .done p { font-size:.95rem; color:#6b5a41; line-height:1.5; margin:0 auto 10px; max-width:360px; }
+  .done .box { background:#fffdf6; border:2px solid #e6cf95; border-radius:14px; padding:12px 14px;
+       font-size:.9rem; color:#5a4a33; max-width:360px; margin:0 auto; line-height:1.5; }
+</style>
+</head>
+<body>
+  <div class="page" id="page">
+    <a class="back" href="index.html">‹ Back to Games World</a>
+    <img class="lou" src="lou.jpg" alt="Lou the kangaroo">
+    <div class="badge">📖 Get your copy</div>
+    <h1>The Kindness That Grew</h1>
+    <p class="by">written &amp; illustrated by Luella Bees 🦘</p>
+
+    <p class="price-line">$25 a copy</p>
+    <div class="starlight">🌟 Every dollar of profit goes to the <strong>Starlight Children's Foundation</strong>, helping seriously ill children in hospital.</div>
+    <p class="pickup">Collect your copy free from <strong>Wanda Health, Salamander Bay</strong>, where Luella's mum works. Once you order, we'll email you the payment details to finish up. 💛</p>
+
+    <form id="order-form" novalidate>
+      <div class="field">
+        <label for="name">Your name</label>
+        <input id="name" type="text" placeholder="First and last name" autocomplete="name" maxlength="80" required>
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" inputmode="email" placeholder="you@example.com" autocomplete="email" maxlength="120" required>
+      </div>
+      <div class="field">
+        <label for="phone">Phone <span style="font-weight:500;color:#8a7a55">(optional)</span></label>
+        <input id="phone" type="tel" inputmode="tel" placeholder="For pickup reminders" autocomplete="tel" maxlength="24">
+      </div>
+      <div class="field">
+        <label for="qty">How many copies?</label>
+        <select id="qty">
+          <option value="1">1 copy — $25</option>
+          <option value="2">2 copies — $50</option>
+          <option value="3">3 copies — $75</option>
+          <option value="4">4 copies — $100</option>
+          <option value="5">5 copies — $125</option>
+        </select>
+      </div>
+      <div class="total">Total: <span class="amt" id="total">$25</span></div>
+      <button type="submit" class="buy" id="submit">Purchase a copy →</button>
+      <div class="err" id="err"></div>
+    </form>
+
+    <p class="fine">💛 A little family project — thank you for supporting Luella and the Starlight Foundation.</p>
+  </div>
+
+<script>
+  var ENDPOINT = "https://script.google.com/macros/s/AKfycby37lv5kxVDIDAI77jSxijNvVxhqgMJVeHkJF_p8Tf2hbdpTy8TdkN9caEPz3rMYubPnA/exec";
+  var PRICE = 25;
+  var qtyEl = document.getElementById('qty');
+  var totalEl = document.getElementById('total');
+  function currentTotal() { return PRICE * parseInt(qtyEl.value, 10); }
+  qtyEl.addEventListener('change', function () { totalEl.textContent = '$' + currentTotal(); });
+
+  document.getElementById('order-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = document.getElementById('name').value.trim();
+    var email = document.getElementById('email').value.trim();
+    var phone = document.getElementById('phone').value.trim();
+    var qty = parseInt(qtyEl.value, 10);
+    var err = document.getElementById('err');
+
+    if (name.length < 2) { err.textContent = 'Please pop in your name 🙂'; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Please enter a valid email so we can send payment details.'; return; }
+    err.textContent = '';
+
+    var btn = document.getElementById('submit');
+    btn.disabled = true; btn.textContent = 'Sending…';
+
+    var total = PRICE * qty;
+    try {
+      fetch(ENDPOINT, {
+        method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          type: 'order', format: 'print', attending: '',
+          name: name, email: email, phone: phone,
+          qty: qty, total: total, ts: new Date().toISOString(),
+          note: 'Web order via luellabees.com — pickup Wanda Health, Salamander Bay'
+        })
+      });
+    } catch (_) {}
+
+    var copies = qty > 1 ? (qty + ' copies') : 'your copy';
+    document.getElementById('page').innerHTML =
+      '<div class="done">' +
+        '<div class="tick">🌱</div>' +
+        '<h2>Thank you, ' + name.replace(/[<>&]/g, '') + '!</h2>' +
+        '<p>Your order for <strong>' + copies + '</strong> of <em>The Kindness That Grew</em> is in.</p>' +
+        '<div class="box">' +
+          'We\'ve just emailed <strong>' + email.replace(/[<>&]/g, '') + '</strong> with how to pay your <strong>$' + total + '</strong>. ' +
+          'Once that\'s done, collect your ' + (qty > 1 ? 'copies' : 'copy') + ' from <strong>Wanda Health, Salamander Bay</strong>. ' +
+          '<br><br>Can\'t see the email? Check spam, or message Jodie and we\'ll sort it. 💛' +
+        '</div>' +
+        '<p class="fine" style="margin-top:16px">🌟 Every dollar of profit supports the Starlight Children\'s Foundation.</p>' +
+        '<a class="back" href="index.html" style="margin-top:8px">‹ Back to Games World</a>' +
+      '</div>';
+    window.scrollTo(0, 0);
+  });
+</script>
+</body>
+</html>
